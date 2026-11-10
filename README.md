@@ -9,10 +9,12 @@
 - 用单章短流程减少重复探索和等待，最终提交保持串行。
 - 处理动态分页、空白末页、标题冲突、页面状态过期及结果截断。
 - 区分已上传、已提交审核、审核中和已发布。
+- 为重构准备全部章节的备份与清空计划，取得具体授权后逐章删除并核实；按给定卷名创建分卷。
+- 按“卷名与章号范围”核对计划，获准后调整草稿所属卷，再按章号逐章提交并核对卷归属；已提交章不重复发布。
 
 ## 安装与使用
 
-将仓库完整复制到支持 Agent Skills 的工具所读取的 `fanqie-publishing` 技能目录，保留 `SKILL.md` 和 `references/` 的相对结构。例如，使用 Cindy 的共享用户技能目录：
+将仓库完整复制到支持 Agent Skills 的工具所读取的 `fanqie-publishing` 技能目录，保留 `SKILL.md`、`references/`、`scripts/` 和 `tests/` 的相对结构。例如，使用 Cindy 的共享用户技能目录：
 
 ```bash
 git clone https://github.com/dotecxy/fanqie-publishing.git ~/.agents/skills/fanqie-publishing
@@ -21,6 +23,10 @@ git clone https://github.com/dotecxy/fanqie-publishing.git ~/.agents/skills/fanq
 新建或重启 Agent 会话后，让它使用 `fanqie-publishing`，并明确作品、稿源、章节范围和发布方式。例如：
 
 > 将这部作品草稿箱中的所有非空章节按序提交审核。遇到重名时，只修改后面章节的标题，正文保持不变。
+
+按卷发布时给出卷名和章号边界，并说明是否允许归卷，例如：
+
+> 将第1～30章归入“第一卷 开局”，第31～60章归入“第二卷 入城”，允许调整这些草稿的所属卷，然后按章号立即提交审核，正文保持不变。
 
 ## 使用条件
 
@@ -35,5 +41,11 @@ AI 使用声明必须按实际创作情况选择。示例页码、选择器、�
 - [SKILL.md](SKILL.md)：技能入口、授权边界和发布流程。
 - [连续发布与核对](references/continuous-publishing.md)：批量导入、全文比对和短流程编排。
 - [旧 CUA 恢复](references/cua-recovery.md)：仅供旧 `mcp__cua_repl.js` 路径参考。
+- [清空章节与创建分卷](references/chapter-admin.md)：授权、备份、回执与浏览器适配约定。
+- [管理代码](scripts/chapter-admin.mjs)：Node.js 无依赖编排；需接入现场浏览器 UI 适配器，尚未真实删除/建卷验证。
+- [按卷归属与发布](references/volume-publishing.md)：卷与章号计划、草稿归卷、逐章提交和超时恢复。
+- [按卷发布代码](scripts/volume-publishing.mjs)：需提供当前浏览器 UI 适配器，尚未真实归卷发布验证。
 
-公开版本只包含技能文档，不包含小说正文、账号凭据、浏览器会话或发布回执。
+运行全部模拟测试：`node --test tests/*.test.mjs`。添加这些能力不授权清空任何作品；清空不能保证平台允许删除已发布章节，也不能保证恢复评论、发布时间等平台数据。
+
+公开版本只包含技能文档、流程编排代码和模拟测试，不包含小说正文、账号凭据、浏览器会话或发布回执。

@@ -1,6 +1,6 @@
 ---
 name: fanqie-publishing
-description: Use when preparing, uploading, resuming, or publishing chapters in the Fanqie Novel writer platform, including bulk DOCX import, title conflicts, 草稿箱最后一页 chapter selection, 审核中状态, timeouts, or duplicate-submission risk.
+description: Use when managing chapters in the Fanqie Novel writer platform, including publishing by volume, bulk DOCX import, title conflicts, 草稿箱续发, creating volumes, or explicitly authorized chapter clearing for a rewrite.
 ---
 
 # 番茄作家章节发布
@@ -29,6 +29,22 @@ description: Use when preparing, uploading, resuming, or publishing chapters in 
 3. **确实缺稿才上传。** 只有确认章节管理和草稿箱均无该章，且本次授权允许以选定本地原稿上传发布时，才上传该章并核对导入结果。用户仅授权发布已有草稿时不扩展为上传；本地稿源缺失或版本不明时先核实。
 4. **上传后重新判断落点。** 上传成功、页面跳转或草稿创建都不是提交审核成功。重新核对该章：章节管理已为“审核中/已发布”则记录回执，不再提交；仅在草稿箱则记录实际草稿链接/ID，转入第 2 步复用该草稿，核对全文后继续单章发布流程。即使点击过发布，结果仍在草稿箱且章节管理无提交回执，也只能记为“已上传、未提交审核”，先检查当前页面和拦截提示，再从该草稿恢复；不能再次上传或新建同章。上传/提交超时或后台状态不明时先核实，不重放操作。
 5. **两条路径用同一验收标准。** 只有章节管理出现该章“审核中/已发布”回执，才算本章已提交；上传回执或草稿行不能替代它。未能继续完成时报告“已上传到草稿箱、尚未提交审核”及具体阻断。后台读取失败、查找尚未完成时不判定缺稿，也不以重新上传来试。提交第 143 章后即完成该单章范围，不自动发布第 144 章，保留用户已有的前序门槛。
+
+## 作品重构：清空章节与创建分卷
+
+仅在用户要求管理后台章节或分卷时读 [清空章节与创建分卷](references/chapter-admin.md)，代码入口为 [chapter-admin.mjs](scripts/chapter-admin.mjs)。它提供备份与计划、明确删除授权、逐章删除核实和创建分卷回执的编排；浏览器适配须依据现场 UI，实现代码未经真实删除/建卷验证。
+
+- “添加清空能力”只授权编辑技能，不授权清空任何作品；“重构一本书”也不自动授权删除。实际删除前先完成完整后台正文备份和可核对计划，再取得针对作品及清单的明确授权。
+- 全清必须明确包括已发布、审核中、普通草稿与空白稿；否则先确定范围。发布任务继续保留空白稿，不自动删除分卷或作品。
+- 创建分卷与删除、上传、发布、移动章节是独立动作，按用户指定卷名和顺序操作；默认卷及已存在的同名卷先查实时状态，避免重复创建。
+
+## 按卷发布
+
+用户要求按卷发布、将指定章节归入指定卷后发布时，读 [按卷归属与发布](references/volume-publishing.md)，代码入口为 [volume-publishing.mjs](scripts/volume-publishing.mjs)。先建立“卷 ID、卷名、起止章号”的固定计划，再按全书章号升序逐章核稿、归卷、提交并取得对应卷的回执。
+
+- 建卷、调整草稿所属卷和发布分别按实际授权执行；缺卷时仅在获建卷授权后调用建卷流程，不从章数猜测卷名或边界。
+- 已提交章节核对正文及卷归属后跳过；归属不符时停止，不自动移动已发布或审核中章节。空白稿保留，范围内缺章或空正文先核实，不跳过后继续。
+- 代码提供无依赖的流程编排和模拟测试；实际浏览器适配器需根据当前页面实现，尚未经真实归卷发布验证。
 
 ## 高效连续发布
 
