@@ -1,6 +1,6 @@
 ---
 name: fanqie-publishing
-description: Use when managing chapters in the Fanqie Novel writer platform, including publishing by volume, bulk DOCX import, title conflicts, 草稿箱续发, creating volumes, or explicitly authorized chapter clearing for a rewrite.
+description: Use when managing chapters in the Fanqie Novel writer platform, including publishing by volume, bulk DOCX import, title conflicts, 草稿箱续发, creating volumes, completion applications and rejected-completion checks, or explicitly authorized chapter clearing for a rewrite.
 ---
 
 # 番茄作家章节发布
@@ -55,6 +55,16 @@ description: Use when managing chapters in the Fanqie Novel writer platform, inc
 - **已发布章节不能改卷。** 发布设置里的分卷是只读文本；落错卷只能删除后重发（需授权）或由用户接受现状。不得声称“稍后调整分卷”。
 - **卷内无章节时建不了下一个卷**（`-4054 暂不支持创建多个无章节的分卷`）。须先把当前卷发完再建下一卷；建卷按钮静默失败时先查网络回执，不重复点击。
 - **切换卷后重新读卷名确认。** 章节管理页的分卷筛选切换后表格常不重渲染，读到的行可能仍是上一卷。
+
+## 完结申请与驳回复查
+
+用户提出完结申请、询问为何完结不了、或收到“完结申请审核不通过”时，读 [完结申请被驳回的排查](references/completion-review.md)。要点：
+
+- **先读驳回原文**（左侧“消息通知”→“作品通知”），不要凭“补全结尾”猜测原因。通知通常含硬性等待期（如“3 天后重新发起”），提前重试无效。
+- **“补全结尾”不等于缺章节。** 先做完整性核对（总章数、卷分布、状态），但结构完整也不能证明完结会通过——本项目 975 章齐全、五卷正确、全部已发布，完结申请仍被驳回。
+- **真因多为末章标题缺完结标记。** 平台按标题判断结尾是否补全，全书标题不含“大结局/终章/全书完”时状态停在“连载中”。改标题即可，正文不动。
+- 已发布章节的标题可改（行末 `.tomato-edit` 进 `modifychapter`），实测**不触发重新审核**、状态仍“已发布”；改完同步本地文件名与首行，避免下次核对报标题不符。
+- 完结申请通过不等于签约、推荐位等其他流程完成；不因完结自动扩大授权。
 
 ## 高效连续发布
 
@@ -115,6 +125,8 @@ description: Use when managing chapters in the Fanqie Novel writer platform, inc
 | “新建分卷”点了没反应 | 多半是 `-4054`（上一卷为空）；先发完当前卷，不重复点击 |
 | 从草稿箱最后一页发布 | 确认末页、固定授权集合、识别数值章号；每章回执后刷新分页 |
 | 后台为“审核中”或“已发布” | 记录/核对状态，不再提交 |
+| 完结申请被驳回、要求“补全结尾” | 先查末章标题有无大结局/终章标记；结构完整也照此排查 |
+| 已完结作品状态仍“连载中” | 改末章标题加完结标记，正文不动 |
 | 调用超时、后台状态不明 | 查实时后台与旧调用状态；不能判断时暂停 |
 | 未知提示、版本冲突、AI 使用事实不明 | 不猜测，不确认提交；先查证或询问 |
 
@@ -129,6 +141,8 @@ description: Use when managing chapters in the Fanqie Novel writer platform, inc
 | “页面显示了目标分卷名。” | 分卷筛选切换后表格常不重渲染；重新进入列表页核对实际行。 |
 | “AI 选项只是必填项，按默认值就好。” | 这是事实声明；依据创作事实选择，未知则停。 |
 | “提示看起来和以前差不多，可以直接点。” | 只按已识别的提示分支处理；新提示先读清并确认影响。 |
+| “说结尾没写完，肯定是章节没发全。” | 结构完整也会被驳回；平台看末章标题的完结标记，不读正文判断。 |
+| “被驳回了赶紧重交一次。” | 通知常含硬性等待期（如 3 天），提前提交无效。 |
 
 ## 硬性暂停信号
 
